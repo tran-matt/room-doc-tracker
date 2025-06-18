@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Room } from "../../types/room";
 import { Document } from "../../types/document";
-import { fetchDocumentsByRoomId, getDocumentStatus, insertDocumentWithFile } from "./api";
+import { fetchDocumentsByRoomId, getDocumentStatus, insertDocumentWithFile, updateRoom } from "./api";
 import DocumentUploadModal from "./DocumentUploadModal";
 
 interface Props {

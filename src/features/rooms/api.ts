@@ -33,7 +33,6 @@ export async function createRoom(name: string, location: string): Promise<Room> 
   return data as Room;
 }
 
-
 export async function deleteRoom(id: string): Promise<void> {
   const { error } = await supabase.from("rooms").delete().eq("id", id);
   if (error) {
@@ -46,7 +45,7 @@ export async function deleteRoom(id: string): Promise<void> {
 
 export async function fetchDocumentsByRoomId(roomId: string): Promise<Document[]> {
   const { data, error } = await supabase
-    .from("room-documents")
+    .from("documents")
     .select("*")
     .eq("room_id", roomId)
     .order("expiration_date", { ascending: true });
@@ -60,7 +59,7 @@ export async function fetchDocumentsByRoomId(roomId: string): Promise<Document[]
 }
 
 export async function insertDocument(doc: Partial<Document>): Promise<void> {
-  const { error } = await supabase.from("room-documents").insert([doc]);
+  const { error } = await supabase.from("documents").insert([doc]);
   if (error) {
     console.error("Error inserting document:", error.message);
     throw error;
@@ -106,7 +105,7 @@ export async function insertDocumentWithFile(
 }
 
 export async function deleteDocument(id: string): Promise<void> {
-  const { error } = await supabase.from("room-documents").delete().eq("id", id);
+  const { error } = await supabase.from("documents").delete().eq("id", id);
   if (error) {
     console.error("Error deleting document:", error.message);
     throw error;
@@ -117,7 +116,7 @@ export async function deleteDocument(id: string): Promise<void> {
 
 export async function searchDocumentsAcrossRooms(keyword: string): Promise<Document[]> {
   const { data, error } = await supabase
-    .from("room-documents")
+    .from("documents")
     .select("*")
     .ilike("title", `%${keyword}%`)
     .order("expiration_date", { ascending: true });
@@ -143,4 +142,29 @@ export function getDocumentStatus(
   if (diffInDays < 0) return "expired";
   if (diffInDays <= warnDays) return "expiring soon";
   return "valid";
+}
+
+// Update room
+export async function updateRoom(id: string, name: string, location?: string): Promise<void> {
+  const { error } = await supabase
+    .from("rooms")
+    .update({ name, location })
+    .eq("id", id);
+
+  if (error) {
+    throw error;
+  }
+}
+
+// Update document
+export async function updateDocument(id: string, updates: Partial<Document>): Promise<void> {
+  const { error } = await supabase
+    .from("documents")
+    .update(updates)
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error updating document:", error.message);
+    throw error;
+  }
 }
